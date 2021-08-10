@@ -1,4 +1,4 @@
-// Shader que ejemplifica la lógica básica del ShaderLab de Unity (Propiedades, SubShader, Tags...)
+// Shader que ejemplifica la lógica básica del Shader de Unity (Propiedades, SubShader, Tags, CGPROGRAM...)
 
 Shader "MyShaders/USB_simple_color"
 {
@@ -120,8 +120,44 @@ Shader "MyShaders/USB_simple_color"
         Pass
         {
             CGPROGRAM
+
+            //----------------------------------------------- Tipos de Datos ----------------------------------------------------//
+
+           // 1. Valores escalares
+           
+           //float: tipo de dato de alta precisión. 32 bits.  // Usado en cálculo de posiones en world-space, mapas UV, trigonometria...
+           //half: tipo de dato de media precisión. 16 bits   // Usado en cálculo de vectores, direcciones, colores, posiciones object-space...
+           //fixed (deprecated): tipo de dato de baja precisión. 11 bits // Operaciones simples
+
+           //int: tipo de dato entero
+           //sampler2D: tipo de dato de sampleo (mapeo) de textura y coordenadas UV
+           //samplerCube
+
+            // 2. Vectores
+
+            //float2, float3, float4  // e.g. float3 uv = float3(1, 1, 1)
+            //half2, half3, half4     // e.g halg4 color = half4(255,255,255,0)
+
+            // 3. Matrices
+
+            //float2x2, float3x3, float4x4
+            //half2x2, half3x3, half4x4
+
+            //float3x3 nombre = float3x3    // three rows and three columns 
+            //(
+            //    1, 0, 0,
+            //    0, 1, 0,
+            //    0, 0, 1
+            //);
+
+            //------------------------------------------------- Pragmas -------------------------------------------------------//
+            
+            // allow me to compile the "vert" function as a vertex shader. 
             #pragma vertex vert
+
+            // allow me to compile the "frag" function as a fragment shader.
             #pragma fragment frag
+
             // make fog work
             #pragma multi_compile_fog
 
@@ -129,18 +165,24 @@ Shader "MyShaders/USB_simple_color"
             #pragma shader_feature _ENABLE_ON
             #pragma multi_compile _OPTIONS_OFF _OPTIONS_RED  _OPTIONS_BLUE
 
-             // generate connection variables 
-            float _Brightness;
-            int _Samples;
-            
+            //------------------------------------------------- Include -------------------------------------------------------//
+            // archivo de ayuda de Unity con funciones de utilidad para compilar HSLS
+            // Ruta:  {unity install path}/Data/CGIncludes/UnityCG.cginc
             #include "UnityCG.cginc"
 
+            //------------------------------------- Vertex Input y Vertex Output ----------------------------------------------//
+            
+            // appdata, corresponde a los datos de entrada del vertex shader (creada por defecto)
+            // almacenaremos las propiedades de nuestros objetos (e.g. posición de los vértices, normales, etc)
+            // sintaxis: vector[n] name : SEMANTIC[n];
             struct appdata
             {
-                float4 vertex : POSITION;
+                float4 vertex : POSITION; 
                 float2 uv : TEXCOORD0;
             };
 
+            // v2f, corresponde a los datos de salida del vertex shader (creada por defecto)
+            // almacenaremos las propiedades rasterizadas para llevarlas al “fragment shader stage”.
             struct v2f
             {
                 float2 uv : TEXCOORD0;
@@ -148,27 +190,60 @@ Shader "MyShaders/USB_simple_color"
                 float4 vertex : SV_POSITION;
             };
 
+            // Semánticas + utilizadas
+            
+            //struct vertexInput (e.g. appdata)
+            //{
+            //    float4 vertPos : POSITION;  // Posición object-space
+            //    float2 texCoord : TEXCOORD0; // Coordenadas de textura
+            //    float3 normal : NORMAL0; // Normales
+            //    float3 tangent : TANGENT0; // Tangentes
+            //    float3 vertColor:  COLOR0; // Color
+            //};
+
+            //struct vertexOutput (e.g. v2f)
+            //{
+            //    float4 vertPos : SV_POSITION; // Posición object-space
+            //    float2 texCoord : TEXCOORD0; // Coordenadas de textura
+            //    float3 tangentWorld : TEXCOORD1; // Tangenetes
+            //    float3 binormalWorld : TEXCOORD2; // Binormales
+            //    float3 normalWorld : TEXCOORD3; // Normales
+            //    float3 vertColor:  COLOR0; // Color
+            //};
+
+            //---------------------------------- Variables de conexión (uniform) ------------------------------------------//
+            // Conectan las propiedades declaradas en el ShaderLab y expuestas al editor con el programa del shader para poder ser utilizadas
             sampler2D _MainTex;
             float4 _MainTex_ST;
 
+
+            //----------------------------------------- Vertex Shader Stage ----------------------------------------------//
+            // En esta etapa en donde los vértices son transformados desde un espacio 3D a una proyección bidimensional en la pantalla.
             v2f vert (appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.vertex = UnityObjectToClipPos(v.vertex); // transformación de los vértices del objeto desde object-space a clip-space
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex); //cumple la función de controlar el “tiling y offset” en las coordenadas UV de la textura.
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            //----------------------------------------- Fragment Shader Stage ----------------------------------------------//
+            // Va a procesar cada píxeles en la pantalla del computador en relación al objeto que estamos visualizando.
+            half4 frag (v2f i) : SV_Target // SV_Target: color de salida del shader
             {
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+                half4 col = tex2D(_MainTex, i.uv);
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
+            
             ENDCG
+
         }
     }
+    
+    // El Fallback devuelve un shader por defecto en caso de que el subshader falle o no compile correctamente
+    Fallback "Mobile / Unlit"
 }
