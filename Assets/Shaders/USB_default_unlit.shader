@@ -1,12 +1,14 @@
-Shader "Unlit/USB_default_unlit"
+Shader "MyShaders/USB_default_unlit"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _Color ("Texture Color", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType" = "Transparent"  "Queue" = "Transparent" }
+        Blend SrcAlpha OneMinusSrcAlpha
         LOD 100
 
         Pass
@@ -34,6 +36,25 @@ Shader "Unlit/USB_default_unlit"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            uniform float4 _Color;        // connection variable.
+
+            //--------------------------------------- Funciones -----------------------------------------------//
+
+            // Caso 1: Sin retorno
+            
+            //void FakeLight_float (in float3 Normal, out float3 Out)
+            //{
+            //    float[n] operation = Normal;
+            //    Out = operation; 
+            //}
+
+            // Caso 2: Con retorno
+
+            //half3 FakeLight (float3 Normal)
+            //{
+            //  float[n] operation = Normal;
+            //  return operation; 
+            //}
 
             v2f vert (appdata v)
             {
@@ -50,7 +71,7 @@ Shader "Unlit/USB_default_unlit"
                 fixed4 col = tex2D(_MainTex, i.uv);
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
+                return col * _Color;
             }
             ENDCG
         }
