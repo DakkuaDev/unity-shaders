@@ -8,8 +8,8 @@
     {          
         // SE PUEDE ESCRIBIR AQUÍ  
         // Cull Back
-        // Cull Front
-         Cull Off
+         Cull Front
+        // Cull Off
 
         Pass
         {       

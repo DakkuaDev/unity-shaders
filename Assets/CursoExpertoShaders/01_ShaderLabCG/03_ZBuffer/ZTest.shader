@@ -15,9 +15,9 @@
         Pass
         {
             //ZTest LEqual    // DEFAULT
-            //ZTest Greater
-            ZTest Less
-            //Cull Front
+            ZTest Greater
+            //ZTest Less
+            Cull Front
 
             CGPROGRAM
             #pragma vertex vert

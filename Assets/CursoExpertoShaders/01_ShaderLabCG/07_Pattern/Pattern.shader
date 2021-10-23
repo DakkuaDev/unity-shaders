@@ -20,7 +20,7 @@
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-            #include "Assets/01_ShaderLabCG/CGFiles/RotateCG.cginc"
+            #include "Assets/CursoExpertoShaders/01_ShaderLabCG/CGFiles/RotateCG.cginc"
 
             struct appdata
             {
