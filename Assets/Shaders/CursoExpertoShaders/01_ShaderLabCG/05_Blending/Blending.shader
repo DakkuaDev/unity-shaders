@@ -22,12 +22,12 @@
 		//Blend DstColor Zero				// MULTIPLY
 		//Blend DstColor SrcColor			// 2X MULTIPLY
 		//Blend SrcColor One				// OVERLAY
-		Blend OneMinusSrcColor One		// SOFT LIGHT
-		//Blend Zero OneMinusSrcColor			// SUBTRACT
+		//Blend OneMinusSrcColor One		// SOFT LIGHT
+		Blend Zero OneMinusSrcColor			// SUBTRACT
 
 		//BlendOp Add							// DEFAULT VALUE
 		//BlendOp Sub
-		BlendOp Max
+		//BlendOp Max
 		//BlendOp Min
 		//BlendOp RevSub
 

@@ -44,8 +44,8 @@
             {
                 v2f o;   
                 o.vertex = UnityObjectToClipPos(v.vertex);  
-                //o.uv = rotate(v.uv, _Value4);    // LLAMADA DESDE ROTATECG        
-                o.uv = v.uv;
+                o.uv = rotate(v.uv, _Value4);    // LLAMADA DESDE ROTATECG        
+                //o.uv = v.uv;
                 return o;
             }           
 

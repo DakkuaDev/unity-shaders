@@ -40,7 +40,7 @@
 
             float4 flag (float4 vertexPosition, float2 uv)
             {
-                vertexPosition.y += sin((uv.x- (_Time.y * _Speed)) * _Frequency) * (uv.x * _Amplitude);
+                vertexPosition.y += sin((uv.y - (_Time.y * _Speed)) * _Frequency) * (uv.y * _Amplitude);
                 float4 vertex = UnityObjectToClipPos(vertexPosition);
                 return vertex;
             }
